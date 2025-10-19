@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+ <script src="/webjars/jquery/3.6.4/jquery.min.js"></script>
+ <script>
+    $(document).ready(function () {
+        $("#countryId").on("change", function () {
+            var cid = $("#countryId").val();
+            $('#stateId').find('option').remove();
+            $('#cityId').find('option').remove();
+            $('<option>').val('').text("-select-").appendTo("#stateId");
+            $.ajax({
+                type: 'GET',
+                url: '/states/' + cid,
+                success: function (response) {
+                    console.log(response);
+                    
+                    $.each(response, function(key, value){
+                        $('<option>').val(key).text(value).appendTo("#stateId");
+                    });
+                }
+            });
+        });
+        $("#stateId").on("change", function () {
+            var sid = $("#stateId").val();
+            $('#cityId').find('option').remove();
+            $('<option>').val('').text("-select-").appendTo("#cityId");
+            $.ajax({
+                type: 'GET',
+                url: '/cities/' + sid,
+                success: function (response) {
+                    console.log(response);
+                    
+                    $.each(response, function(key, value){
+                        $('<option>').val(key).text(value).appendTo("#cityId");
+                    });
+                }
+            });
+        });
+    });
+</script>
+  </head>
+  <body>
+    <h2>Create Account</h2>
+      <div class="container">
+       <p th:text="${smsg}" class="text-success"></p>
+   <p th:text="${emsg}" class="text-danger"></p>
+   <form th:action="@{/register}" th:object="${registerForm}" method="post">
+   <table>
+   <tr>
+   <td> Name:</td>
+    <td> <input type="text" th:field="*{uName}"></td>
+    
+   </tr>
+   <tr>
+   <td> Email:</td>
+    <td> <input type="email" th:field="*{email}"></td>
+    
+   </tr>
+   <tr>
+    <td>PhonNo:</td>
+    <td> <input type="number" th:field="*{phoneNo}"></td>
+   </tr>
+   <tr>
+    <td>Select Country:</td>
+    <td> <select th:field="*{countryId}">
+    <option value="">-Select</option>
+    <option th:each="entry : ${countries.entrySet()}" th:value="${entry.key}"
+        th:text="${entry.value}">
+    </option>
+    </select>
+    </td>
+   </tr>
+   <tr>
+    <td>Select State:</td>
+    <td> <select th:field="*{stateId}">
+    <option value="">-Select</option>
+    </select>
+    </td>
+   </tr>
+   <tr>
+    <td>Select city:</td>
+    <td> <select th:field="*{cityId}">
+    <option value="">-Select</option>
+    </select>
+    </td>
+   </tr>
+   <tr>
+   <td> </td>
+    <td> <input type="submit" value="Register" class="btn btn-primary"></td>
+   </tr>
+   </table>
+   
+   </form>
+   
+   </div> 
+    <a href="/">Login-Here</a>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  </body>
+</html>
